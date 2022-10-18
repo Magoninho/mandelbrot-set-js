@@ -1,0 +1,113 @@
+<canvas style="image-rendering: pixelated;" id="canvas" width="600" height="600"></canvas>
+
+<script>
+	let canvas = document.getElementById("canvas");
+	let ctx = canvas.getContext("2d");
+
+	const WIDTH = 600;
+	const HEIGHT = 600;
+
+	ctx.fillStyle = "white";
+	ctx.fillRect(0, 0, 800, 600)
+
+	const MAX_ITERATION = 120
+
+
+	function mandelbrot(c) {
+		// Zi = (Zi-1)² + c
+		let z = {
+			x: 0,
+			y: 0
+		};
+		let i = 0;
+		let abs_value = 0;
+
+		while (i < MAX_ITERATION && abs_value <= 2) {
+			let z_squared = {
+				x: Math.pow(z.x, 2) - Math.pow(z.y, 2),
+				y: 2 * z.x * z.y
+			};
+
+			z = {
+				x: z_squared.x + c.x,
+				y: z_squared.y + c.y
+			}
+
+			abs_value = Math.sqrt(Math.pow(z.x, 2), Math.pow(z.y, 2));
+
+			i++;
+
+		}
+		return {
+			isIn: abs_value <= 2,
+			interactions: i
+		};
+
+	}
+
+	let camera_x = 0;
+	let camera_y = 0;
+
+
+
+
+	const REAL_SET = { start: -2, end: 1 }
+	const IMAGINARY_SET = { start: -1, end: 1 }
+	let scale = WIDTH;
+	let scaled_move = 0.05;
+
+	document.addEventListener("keydown", function (event) {
+		let prev_scale = scale;
+		if (event.keyCode == 37) camera_x -= scaled_move;
+		if (event.keyCode == 38) camera_y -= scaled_move;
+		if (event.keyCode == 39) camera_x += scaled_move;
+		if (event.keyCode == 40) camera_y += scaled_move;
+		
+		if (event.keyCode == 107) {
+			scale *= 1.5
+			scaled_move = scaled_move - (scaled_move / scale)
+			// scaled_move = ((scaled_move * scale) / prev_scale) + scaled_move;
+
+		}
+
+
+		draw();
+
+	})
+
+
+	function draw() {
+
+
+		for (let y = 0; y < WIDTH; y++) {
+			for (let x = 0; x < HEIGHT; x++) {
+
+
+				// Valores relativos (normalizados) para serem os passos do valor de C
+				let scale_x = (REAL_SET.end - REAL_SET.start) / scale;
+				let scale_y = ((IMAGINARY_SET.end - IMAGINARY_SET.start) / scale);
+
+
+				let c = {
+					x: (REAL_SET.start + camera_x) + (x * scale_x),
+					y: (IMAGINARY_SET.start + camera_y) + (y * scale_y)
+				}
+
+
+				let result = mandelbrot(c);
+				if (result.isIn) {
+					// console.log(c.x, c.y)
+					ctx.fillStyle = "black";
+
+					// 	// console.log("asdf");
+				} else {
+					ctx.fillStyle = `rgb(${(Math.round(result.interactions * 900) / 80) % 255}, 0, 255)`;
+				}
+				ctx.fillRect(x, y, 1, 1);
+
+			}
+		}
+	}
+
+	draw();
+</script>
