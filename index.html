@@ -1,5 +1,21 @@
 <canvas style="image-rendering: pixelated;" id="canvas" width="600" height="600"></canvas>
 
+<style>
+	kbd {
+		border: 1px solid black;
+		background-color: gainsboro;
+		display: inline-block;
+		padding: 5px;
+		text-align: center;
+		font-family: initial;
+	}
+</style>
+
+<p>Visualização do conjunto de Mandelbrot por Felipe (Magoninho)</p>
+<p>Controles:</p>
+<p><kbd>&leftarrow;</kbd> <kbd>&uparrow;</kbd> <kbd>&rightarrow;</kbd> <kbd>&downarrow;</kbd> move around</p>
+<p><kbd>+</kbd> zoom in</p>
+<p><kbd>-</kbd> zoom out</p>
 <script>
 	let canvas = document.getElementById("canvas");
 	let ctx = canvas.getContext("2d");
@@ -57,17 +73,19 @@
 	let scaled_move = 0.05;
 
 	document.addEventListener("keydown", function (event) {
-		let prev_scale = scale;
 		if (event.keyCode == 37) camera_x -= scaled_move;
 		if (event.keyCode == 38) camera_y -= scaled_move;
 		if (event.keyCode == 39) camera_x += scaled_move;
 		if (event.keyCode == 40) camera_y += scaled_move;
 		
-		if (event.keyCode == 107) {
-			scale *= 1.5
+		if (event.keyCode == 107 || event.keyCode == 61) {
+			scale *= 1.5;
+			// idk
 			scaled_move = scaled_move - (scaled_move / scale)
-			// scaled_move = ((scaled_move * scale) / prev_scale) + scaled_move;
-
+		} 
+		if (event.keyCode == 173 || event.keyCode == 109) {
+			scale /= 1.5;
+			scaled_move = scaled_move - (scaled_move / scale)
 		}
 
 
